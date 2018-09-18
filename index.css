@@ -1,0 +1,23 @@
+body {
+    background-color: #393f4d;
+    color: #d4d4dc;
+}
+
+h2 {
+    margin-left: 15px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+.btn-block {
+    background-color: #393f4d;
+    border: none;
+}
+
+.controls {
+    margin-top: 10px;
+}
