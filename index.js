@@ -78,6 +78,13 @@ function handleCorrectAnswer(currentQuestion) {
     let current = 1;
 }
 
+function handleIncorrectAnswer(currentQuestion) {
+    $(event.target).addClass("incorrect");
+    console.log("handleIncorrectAnswer ran");
+    event.stopPropagation();
+    let current = 1;
+}
+
 function handleQuizStartClick() {
     $( ".start_quiz" ).click(function() {
         $('.js-start_box').addClass('hidden');
