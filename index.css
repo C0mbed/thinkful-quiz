@@ -25,3 +25,7 @@ h2 {
 .hidden {
    display: none; 
 }
+
+.correct {
+    background-color: green;
+}
