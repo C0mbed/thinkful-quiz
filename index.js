@@ -1,6 +1,6 @@
 function renderStart() {
     // render the start page
-    console.log('`view` ran');
+    console.log('`Start page` ran');
     generateStart();
   }
 
@@ -39,7 +39,7 @@ function generateQuiz() {
 
 function renderView() {
     // render the summary
-    console.log('`view` ran');
+    console.log('`Generating` quiz');
     generateQuiz()
   }
 
