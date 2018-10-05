@@ -23,9 +23,30 @@ h2 {
 }
 
 .hidden {
-   display: none; 
+   display: none;
 }
 
-.correct {
+.answer_button:disabled {
+    background-color: transparent;
+}
+
+.correct,
+.correct:disabled {
     background-color: green;
 }
+
+.incorrect,
+.incorrect:disabled {
+    background-color: red;
+}
+
+.answer_text {
+    margin-top: 50px;
+}
+
+.result {
+    font-size: 2em; 
+}
+
+
+
