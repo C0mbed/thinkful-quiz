@@ -1,9 +1,10 @@
+// render the start page
 function renderStart() {
-    // render the start page
     console.log('`Start page` ran');
     generateStart();
   }
 
+  //render the HTML in the start/landing view
 function generateStart() {
     let viewStart = '<div class="js-start_box row justify-content-center">';
     viewStart += '<h2>Lets take a quiz!</h2>';
@@ -26,6 +27,24 @@ function handleQuizStartClick() {
       });
 }
 
+//handles the creation of the questions, and then calls for the creation of the HTML and questions in the view. 
+function renderView() {
+    const questionArray = generateQuestions();
+    console.log('`Generating` quiz');
+    generateQuiz(questionArray, 0);
+}
+
+//global variable to represent the users score.  It begins at zero and is incremented by `incrementUserScore()`.
+let score = 0;
+
+//randomly sorts an array
+function sortAnswers(a,b) {
+    const potentialOpts = [-1, 0, 1];
+    const randomOptsIndex = Math.round(Math.random()*potentialOpts.length);
+    return potentialOpts[randomOptsIndex];
+}
+
+//This function creates the quiz and randomly chooses the questions to display to the user.  
 function generateQuiz(questions, currentQuestionNumber) {
     generateQuestionNumber(currentQuestionNumber + 1);
     // render the quiz
@@ -38,24 +57,21 @@ function generateQuiz(questions, currentQuestionNumber) {
     };
 
     let currentQuestion = questions[count];
+    //This creates the array for each question that will be sorted. 
     let answerButtonText = [
         currentQuestion.answer,
         currentQuestion.decoy_1,
         currentQuestion.decoy_2,
         currentQuestion.decoy_3
     ];
-    //randomly sorts an array
-    function sortAnswers(a,b) {
-        const potentialOpts = [-1, 0, 1];
-        const randomOptsIndex = Math.round(Math.random()*potentialOpts.length);
-        return potentialOpts[randomOptsIndex];
-    }
+    
     //passes the `answerButtonText` into the sort answer function
     answerButtonText = answerButtonText.sort(sortAnswers);
 
     //The variable viewQuiz is where the html is housed for the questions within the view.
     let viewQuiz = '<div class="answer_box row justify-content-center">';
     viewQuiz += '<h2>'+currentQuestion.question_text+'</h2>';
+    
     //the next loop generates the answer multiple choice buttons.
      for (let i = 0; i < answerButtonText.length; i++) {
        viewQuiz += '<button type="button" class="answer_button btn btn-primary btn-lg btn-block col-sm-9">'+answerButtonText[i]+'</button>'
@@ -74,14 +90,7 @@ function generateQuiz(questions, currentQuestionNumber) {
     handleAnswerSelection(currentQuestion, currentQuestionNumber);
 }
 
-//renders the summary
-function renderView() {
-    const questionArray = generateQuestions();
-    console.log('`Generating` quiz');
-    generateQuiz(questionArray, 0);
-}
-
- //handle what happens when someone clicks an answer during the quiz.
+//handle what happens when someone clicks an answer during the quiz.
 function handleAnswerSelection(currentQuestion, currentQuestionNumber) {
     $('.answer_button').click(function(event) {
         event.stopPropagation();
@@ -91,6 +100,13 @@ function handleAnswerSelection(currentQuestion, currentQuestionNumber) {
         validateAnswer(userSelectedAnswer, currentQuestion);
         enableNextButton(userSelectedAnswer, currentQuestionNumber);
     });
+}
+
+//this disables the questions after the user has selected an answer.
+function disableAnswers(userSelectedAnswer) {
+    if (userSelectedAnswer) {
+      $('.answer_button').attr('disabled', true);
+    }
 }
 
 //this function checks to see whether the answer chosen by the user is correct/incorrect and updates the view accordingly.
@@ -107,6 +123,26 @@ function validateAnswer(userSelectedAnswer, currentQuestion) {
     }
 }
 
+//handles a correct answer by the user.
+function handleCorrectAnswer(userSelectedAnswer) {
+    $(event.target).addClass("correct");
+    //console.log("handle answer ran");
+    event.stopPropagation();
+    let answerText = "Awesome, " + userSelectedAnswer + " is correct!";
+    $('.result').text(answerText);
+    disableAnswers(userSelectedAnswer);
+}
+
+//handles an incorrect answer by the user.
+function handleIncorrectAnswer(userSelectedAnswer, correctAnswer) {
+    $(event.target).addClass("incorrect");
+  //console.log("handleIncorrectAnswer ran");
+    event.stopPropagation();
+    let answerText = "Sorry, "  + userSelectedAnswer + " is NOT correct.  The answer is " + correctAnswer;
+    $('.result').text(answerText);
+    disableAnswers(userSelectedAnswer);
+}
+
 function enableNextButton(userSelectedAnswer, currentQuestionNumber) {
     //console.log('enable next button triggered')
     if (userSelectedAnswer) {
@@ -114,6 +150,7 @@ function enableNextButton(userSelectedAnswer, currentQuestionNumber) {
         handleNextQuestion(currentQuestionNumber, score);
     }
 }
+
 //handles what happens when the user has clicked the enabled next button.
 function handleNextQuestion(currentQuestionNumber, score) {
     $('#next_button').click(function() {
@@ -121,7 +158,7 @@ function handleNextQuestion(currentQuestionNumber, score) {
         const questionArray = generateQuestions();
         let count = currentQuestionNumber;
           if (count < 9 ) {
-            console.log('current count is ' + count);
+            //console.log('current count is ' + count);
             count += 1;
             //console.log('The current count is ' + count);
             generateQuiz(questionArray, count);
@@ -129,17 +166,10 @@ function handleNextQuestion(currentQuestionNumber, score) {
             let questionNumber = count + 1;
             generateQuestionNumber(questionNumber);
           } else {
-              console.log('The final score is ' + score);
+              //console.log('The final score is ' + score);
               renderResult(score);
           }
     })
-}
-
-//this disables the questions after the user has selected an answer.
-function disableAnswers(userSelectedAnswer) {
-    if (userSelectedAnswer) {
-      $('.answer_button').attr('disabled', true);
-    }
 }
 
 //This determines the current question number and increments the counter in the nav bar.
@@ -155,34 +185,11 @@ function incrementCorrectAnswers(currentScore) {
         $('#correct_attempt').text(correctAttemptText);
 }
 
-//global variable to represent the users score.  It begins at zero and is incremented by `incrementUserScore()`.
-let score = 0;
-
-//handles a correct answer by the user.
-function handleCorrectAnswer(userSelectedAnswer) {
-    $(event.target).addClass("correct");
-    //console.log("handle answer ran");
-    event.stopPropagation();
-    let answerText = "Awesome, " + userSelectedAnswer + " is correct!";
-    $('.result').text(answerText);
-    disableAnswers(userSelectedAnswer);
-}
-
 //updates the global score variable with the current score
 function incrementUserScore() {
     score++;
     //console.log("incrementing score");
     incrementCorrectAnswers(score);
-}
-
-//handles an incorrect answer by the user.
-function handleIncorrectAnswer(userSelectedAnswer, correctAnswer) {
-    $(event.target).addClass("incorrect");
-  //console.log("handleIncorrectAnswer ran");
-    event.stopPropagation();
-    let answerText = "Sorry, "  + userSelectedAnswer + " is NOT correct.  The answer is " + correctAnswer;
-    $('.result').text(answerText);
-    disableAnswers(userSelectedAnswer);
 }
 
 function renderResult(result) {
@@ -200,20 +207,10 @@ function renderResult(result) {
 }
 
 //This function is used by both the `start again` button and the start again button after the quiz is complete.
-//function startQuizAgain() {
-//    $(document).on("click", "#start_again", function() {
-         //console.log('user selected restart quiz');
-//        result = window.confirm("Are you sure you want to start again?");
-//        if (result == true) {
-//            location.reload(true);
-//        }
-//    });
-//}
-
 function tryQuizAgain() {
-    console.log('user selected restart quiz');
+    //console.log('user selected restart quiz');
     $(document).on("click", ".restart", function() {
-        console.log('restart quiz clicked');
+        //console.log('restart quiz clicked');
         result = window.confirm("Are you sure you want to start again?");
         if (result == true) {
             location.reload(true);
