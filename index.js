@@ -130,7 +130,6 @@ function handleNextQuestion(currentQuestionNumber, score) {
             generateQuestionNumber(questionNumber);
           } else {
               console.log('The final score is ' + score);
-              tryQuizAgain();
               renderResult(score);
           }
     })
@@ -203,6 +202,7 @@ function renderResult(result) {
 //This function is used by both the `start again` button and the start again button after the quiz is complete.
 //function startQuizAgain() {
 //    $(document).on("click", "#start_again", function() {
+         //console.log('user selected restart quiz');
 //        result = window.confirm("Are you sure you want to start again?");
 //        if (result == true) {
 //            location.reload(true);
@@ -211,12 +211,14 @@ function renderResult(result) {
 //}
 
 function tryQuizAgain() {
-    $(document).on("click", "#start_again", function() {
+    console.log('user selected restart quiz');
+    $(document).on("click", ".restart", function() {
+        console.log('restart quiz clicked');
         result = window.confirm("Are you sure you want to start again?");
-            if (result == true) {
-                location.reload(true);
-            }
-        });
+        if (result == true) {
+            location.reload(true);
+        }
+    });
 }
 
 //generates the questions array.
