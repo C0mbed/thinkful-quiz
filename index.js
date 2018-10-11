@@ -7,12 +7,14 @@ function renderStart() {
   //render the HTML in the start/landing view
 function generateStart() {
     let viewStart = '<div class="js-start_box row justify-content-center">';
-    viewStart += '<h2>Lets take a quiz!</h2>';
-    viewStart += '<p>You will be asked 10 multiple choice questions, you can view previous questions, but you cannot change the answer once it is submitted.</p>';
-    viewStart += '<p>The topic is Capital Cities!  How well do you know Capital Cities around the world?';
-    viewStart += '<div class="col-md-4 center-block">';
-    viewStart += '<button type="button" class="start_quiz btn btn btn-outline-secondary">Start Quiz</button>';
+    viewStart += '<h2 class="row justify-content-center">Lets take a quiz!</h2>';
     viewStart += '</div>';
+    viewStart += '<div class="row justify-content-center">';
+    viewStart += '<p class="row justify-content-center">You will be asked 10 multiple choice questions, you can view previous questions, but you cannot change the answer once it is submitted.</p>';
+    viewStart += '<p class="row justify-content-center">The topic is Capital Cities!  How well do you know Capital Cities around the world?';
+    viewStart += '</div>';
+    viewStart += '<div class="row justify-content-center">';
+    viewStart += '<button type="button" class="start_quiz btn btn btn-outline-secondary">Start Quiz</button>';
     viewStart += '</div>';
 
     const startView = document.getElementById('view');
@@ -44,7 +46,7 @@ function sortAnswers(a,b) {
     return potentialOpts[randomOptsIndex];
 }
 
-//This function creates the quiz and randomly chooses the questions to display to the user.  
+//This function creates the quiz and randomly chooses the questions to display to the user.
 function generateQuiz(questions, currentQuestionNumber) {
     generateQuestionNumber(currentQuestionNumber + 1);
     // render the quiz
@@ -57,21 +59,20 @@ function generateQuiz(questions, currentQuestionNumber) {
     };
 
     let currentQuestion = questions[count];
-    //This creates the array for each question that will be sorted. 
+    //This creates the array for each question that will be sorted.
     let answerButtonText = [
         currentQuestion.answer,
         currentQuestion.decoy_1,
         currentQuestion.decoy_2,
         currentQuestion.decoy_3
     ];
-    
+
     //passes the `answerButtonText` into the sort answer function
     answerButtonText = answerButtonText.sort(sortAnswers);
 
     //The variable viewQuiz is where the html is housed for the questions within the view.
     let viewQuiz = '<div class="answer_box row justify-content-center">';
-    viewQuiz += '<h2>'+currentQuestion.question_text+'</h2>';
-    
+    viewQuiz += '<h2>'+currentQuestion.question_text+'</h2>'; 
     //the next loop generates the answer multiple choice buttons.
      for (let i = 0; i < answerButtonText.length; i++) {
        viewQuiz += '<button type="button" class="answer_button btn btn-primary btn-lg btn-block col-sm-9">'+answerButtonText[i]+'</button>'
@@ -194,11 +195,15 @@ function incrementUserScore() {
 
 function renderResult(result) {
     $('#view').empty();
-    let viewResult = '<div class="js-result_box row justify-content-center">';
-    viewResult += '<p>Nice Job, you finished the Quiz!</p><br>';
-    viewResult += '<h2>You scored</h2><br>';
-    viewResult += '<p>' + result + "/10" + '</p><br>';
-    viewResult += '<button type="button" class="restart btn btn btn-outline-secondary">Start Quiz</button>';
+    let viewResult = '<div class="js-result_box justify-content-center">';
+    viewResult += '<div class="row justify-content-center">';
+    viewResult += '<p class ="summary_header">Nice Job, you finished the Quiz!</p><br>';
+    viewResult += '</div>';
+    viewResult += '<div class="row justify-content-center">';
+    viewResult += '<h2>You scored: ' + result + '/10</h2>';
+    viewResult += '</div>';
+    viewResult += '<div class="result_button_box row justify-content-center">'
+    viewResult += '<button type="button" class="summary_restart restart btn btn btn-outline-secondary">Restart Quiz</button>';
     viewResult += '</div>';
     viewResult += '</div>';
 
