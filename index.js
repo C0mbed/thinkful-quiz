@@ -5,17 +5,17 @@ function renderStart() {
 
   //render the HTML in the start/landing view
 function generateStart() {
-    let viewStart = '<div class="start_quiz_view_div">';
-    viewStart += '<h2>Lets take a quiz!</h2>';
-    viewStart += '</div>';
-    viewStart += '<div class="row justify-content-center">';
-    viewStart += '<p>You will be asked 10 multiple choice questions, you can view previous questions, but you cannot change the answer once it is submitted.</p>';
-    viewStart += '<p>The topic is Capital Cities!  How well do you know Capital Cities around the world?';
-    viewStart += '</div>';
-    viewStart += '<div class="start_quiz_div">';
-    viewStart += '<button type="button" class="start_quiz">Start Quiz</button>';
-    viewStart += '</div>';
-
+    let viewStart = `
+        <div class="start_quiz_view_div">
+            <h2>Lets take a quiz!</h2>
+        </div>
+        <div>
+            <p>You will be asked 10 multiple choice questions, you can view previous questions, but you cannot change the answer once it is submitted. The topic is Capital Cities!  How well do you know Capital Cities around the world?</p>
+        </div>
+        <div class="start_quiz_div">
+            <button type="button" class="start_quiz">Start Quiz</button>
+        </div>
+    `
     const startView = document.getElementById('view');
     startView.innerHTML += viewStart;
 }
@@ -101,7 +101,7 @@ function generateAnswerChoices(answerButtonText) {
 
     let possibleAnswers = answerButtonText.sort(sortAnswers);
     for (let i = 0; i < possibleAnswers.length; i++) {
-        const inputDiv = $('<div></div>');
+        const inputDiv = $('<div class="answer_div"></div>');
         const newInput = $('<input/>');
         newInput.attr('type', 'radio');
         newInput.attr('class', 'answer_input');
@@ -245,17 +245,19 @@ function incrementUserScore() {
 
 function renderResult(result) {
     $('#view').empty();
-    let viewResult = '<div class="js-result_box">';
-    viewResult += '<div>';
-    viewResult += '<p class ="summary_header">Nice Job, you finished the Quiz!</p><br>';
-    viewResult += '</div>';
-    viewResult += '<div>';
-    viewResult += '<h2>You scored: ' + result + '/10</h2>';
-    viewResult += '</div>';
-    viewResult += '<div class="result_button_box">'
-    viewResult += '</div>';
-    viewResult += '</div>';
-
+    let viewResult = `
+        <div class="js-result_box">
+            <div>
+                <p class ="summary_header">Nice Job, you finished the Quiz!</p>
+                <br>
+            </div>
+            <div>
+                <h2>${result}/10</h2>
+            </div>
+            <div class="result_button_box">
+            </div>
+        </div>
+    `
     const resultView= document.getElementById('view');
     resultView.innerHTML += viewResult;
 
@@ -271,6 +273,7 @@ function tryQuizAgain() {
         result = window.confirm("Are you sure you want to start again?");
         if (result == true) {
             $('.container').empty();
+            score = 0;
             reload();
         }
     });
