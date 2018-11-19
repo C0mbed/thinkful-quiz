@@ -403,6 +403,7 @@ function generateQuestions() {
 
 //can be called to reload event listeners in the event they drop off. 
 function reload() {
+    $('.nav_item').addClass('hidden');
     generateQuestions()
     renderStart()
     handleQuizStartClick();
