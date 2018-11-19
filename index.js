@@ -3,21 +3,48 @@ function renderStart() {
     generateStart();
   }
 
-  //render the HTML in the start/landing view
+function injectStructure() {
+    console.log('structure injected');
+    const viewStructure = `
+        <section class="view_container">
+            <section class="content_container">
+                 <!--questions and answer choices injected here-->
+             </section>
+            <section class="next_btn_container">
+                 <!--next button injected here-->
+            </section>
+             <section class="results_container">
+                 <!--results injected here-->
+            </section>
+            <section class="summary_container">
+                 <!--summary injected here-->
+             </section>
+        </section>
+    `
+    $('.container').append(viewStructure);
+}
+//render the HTML in the start/landing view
 function generateStart() {
-    let viewStart = '<div class="start_quiz_view_div">';
-    viewStart += '<h2>Lets take a quiz!</h2>';
-    viewStart += '</div>';
-    viewStart += '<div class="row justify-content-center">';
-    viewStart += '<p>You will be asked 10 multiple choice questions, you can view previous questions, but you cannot change the answer once it is submitted.</p>';
-    viewStart += '<p>The topic is Capital Cities!  How well do you know Capital Cities around the world?';
-    viewStart += '</div>';
-    viewStart += '<div class="start_quiz_div">';
-    viewStart += '<button type="button" class="start_quiz">Start Quiz</button>';
-    viewStart += '</div>';
+    startParagraphText();
 
-    const startView = document.getElementById('view');
-    startView.innerHTML += viewStart;
+    const nextButton = createButton('Lets Go!', 'start_quiz', 'start_quiz', true);
+    $('.next_btn_container').append(nextButton);
+}
+
+//this creates the HTML that will be injected into the view.
+function startParagraphText() {
+    let viewStart = `
+        <section>
+            <div>
+                <h2>Lets take a quiz!</h2>
+            </div>
+            <div>
+                <p>You will be asked 10 multiple choice questions, you can view previous questions, but you cannot change the answer once it is submitted.  The topic is Capital Cities!  How well do you know Capital Cities around the world?</p>
+            </div>
+        </section>
+    `
+
+    $('.content_container').append(viewStart);
 }
 
 //handles the loading of the quiz on `click event` once the user has selected begin
@@ -28,7 +55,7 @@ function handleQuizStartClick() {
       });
 }
 
-//handles the creation of the questions, and then calls for the creation of the HTML and questions in the view. 
+//handles the creation of the questions, and then calls for the creation of the HTML and questions in the view.
 function renderView() {
     const questionArray = generateQuestions();
     generateQuiz(questionArray, 0);
@@ -46,9 +73,9 @@ function sortAnswers(a,b) {
 
 //This function creates the quiz and randomly chooses the questions to display to the user.
 function generateQuiz(questions, currentQuestionNumber) {
+    clearViewContainer();
     generateQuestionNumber(currentQuestionNumber + 1);
     // render the quiz
-    $('#view').empty();
 
     let count = 0;
     if (currentQuestionNumber > count) {
@@ -64,25 +91,28 @@ function generateQuiz(questions, currentQuestionNumber) {
         currentQuestion.decoy_3
     ];
     const newQuestion = createQuestionText(currentQuestion, 'answer_box', answerButtonText);
-    $('.container').append(newQuestion);
+    $('.content_container').append(newQuestion);
 
     //create new button under each question
-    const nextButton = createButton('Next', 'next_button', 'next_button');
-    $('.container').append(nextButton);
+    const nextButton = createButton('Next', 'next_button', 'next_button', false);
+    $('.next_btn_container').append(nextButton);
 
     handleAnswerSelection(currentQuestion, currentQuestionNumber);
 }
 
 function createQuestionText(currentQuestion, className, answerButtonText) {
-    let viewQuiz = $('<fieldset></fieldset>')
+    let viewQuiz = $('<form></form>')
+    let quizContent = $('<fieldset></fieldset>')
     const targetClass = "." + className;
-    viewQuiz.attr('class', className);
+    quizContent.attr('class', className);
 
     const question = generateQuestionText(currentQuestion);
     viewQuiz.html(question);
 
     const answerChoices = generateAnswerChoices(answerButtonText, targetClass);
-    viewQuiz.append(answerChoices);
+    quizContent.append(answerChoices);
+
+    viewQuiz.append(quizContent);
 
     return viewQuiz
 }
@@ -95,13 +125,26 @@ function generateQuestionText(currentQuestion) {
     return question;
 }
 
+function clearPreviousResult() {
+    $('.next_btn_container').empty();
+}
+
+function clearViewContainer() {
+    $('.content_container').empty();
+    $('.next_btn_container').empty();
+    $('.results_container').empty();
+    $('.summary_container').empty();
+}
+
 function generateAnswerChoices(answerButtonText) {
+    clearPreviousResult();
     const answerSelections = $('<div></div>')
     answerSelections.attr('class', 'answer_selections');
 
     let possibleAnswers = answerButtonText.sort(sortAnswers);
     for (let i = 0; i < possibleAnswers.length; i++) {
         const inputDiv = $('<div></div>');
+        inputDiv.attr('class', 'answer_div');
         const newInput = $('<input/>');
         newInput.attr('type', 'radio');
         newInput.attr('class', 'answer_input');
@@ -121,21 +164,17 @@ function generateAnswerChoices(answerButtonText) {
 
 function createButton(text, className, idName, enabled) {
     //let button = <button disabled="true" type="button" id="next_button" class="next_button">Next</button>'
-    const buttonDiv = $('<div></div')
-    const divClass = className + "1";
-    buttonDiv.attr('class', divClass);
     const newButton = $('<button></button>')
     newButton.attr('class', className);
     newButton.attr('id', idName);
     newButton.html(text);
-    if (!enabled) {
+    if (enabled == false) {
         newButton.attr('disabled', true)
     } else {
         newButton.attr('disabled', false);
     }
-    $(buttonDiv).append(newButton);
 
-    return buttonDiv;
+    return newButton;
 }
 
 //handle what happens when someone clicks an answer during the quiz.
@@ -161,7 +200,6 @@ function disableAnswers(userSelectedAnswer) {
 //this function checks to see whether the answer chosen by the user is correct/incorrect and updates the view accordingly.
 function validateAnswer(userSelectedAnswer, currentQuestion) {
     const correctAnswer = currentQuestion.answer;
-    resultText();
     if (userSelectedAnswer == correctAnswer) {
         handleCorrectAnswer(userSelectedAnswer);
         //Since the correct answer was selected we increment the users score
@@ -171,21 +209,13 @@ function validateAnswer(userSelectedAnswer, currentQuestion) {
     }
 }
 
-//creates a Div to contain the results text
-function resultText() {
-    const resultDiv = $('<div></div>')
-    resultDiv.attr('class', 'result_text');
-
-    $('.container').append(resultDiv);
-}
-
 //handles a correct answer by the user.
 function handleCorrectAnswer(userSelectedAnswer) {
     $(event.target).closest("div").addClass("correct");
     event.stopPropagation();
 
     let answerText = "Awesome, " + userSelectedAnswer + " is correct!";
-    $('.result_text').append(answerText);
+    $('.results_container').append(answerText);
 
     disableAnswers(userSelectedAnswer);
 }
@@ -196,7 +226,7 @@ function handleIncorrectAnswer(userSelectedAnswer, correctAnswer) {
     event.stopPropagation();
 
     let answerText = "Sorry, "  + userSelectedAnswer + " is NOT correct.  The answer is " + correctAnswer;
-    $('.result_text').append(answerText);
+    $('.results_container').append(answerText);
 
     disableAnswers(userSelectedAnswer);
 }
@@ -227,6 +257,7 @@ function handleNextQuestion(currentQuestionNumber, score) {
 
 //This determines the current question number and increments the counter in the nav bar.
 function generateQuestionNumber(questionNumber) {
+    console.log('questionNumber is ', questionNumber);
     let questionNumberText = "Q" + questionNumber + "/10";
     $('#question_count').text(questionNumberText);
 }
@@ -244,23 +275,26 @@ function incrementUserScore() {
 }
 
 function renderResult(result) {
-    $('#view').empty();
-    let viewResult = '<div class="js-result_box">';
-    viewResult += '<div>';
-    viewResult += '<p class ="summary_header">Nice Job, you finished the Quiz!</p><br>';
-    viewResult += '</div>';
-    viewResult += '<div>';
-    viewResult += '<h2>You scored: ' + result + '/10</h2>';
-    viewResult += '</div>';
-    viewResult += '<div class="result_button_box">'
-    viewResult += '</div>';
-    viewResult += '</div>';
-
-    const resultView= document.getElementById('view');
-    resultView.innerHTML += viewResult;
+    clearViewContainer()
+    resultHTMLView(result);
 
     const restartButton = createButton('Restart', 'restart', '', true);
-    $('.js-result_box').append(restartButton);
+    $('.next_btn_container').append(restartButton);
+}
+
+function resultHTMLView(result) {
+    let viewResult = `
+        <section class="js-result_box">
+            <div>
+                <p class ="summary_header">Nice Job, you finished the Quiz!</p>
+                <br>
+            </div>
+            <div>
+                <h2>You scored: ${result}/10</h2>
+            </div>
+        </section>
+    `
+    $('.content_container').append(viewResult);
 }
 
 //This function is used by both the `start again` button and the start again button after the quiz is complete.
@@ -270,7 +304,7 @@ function tryQuizAgain() {
         //console.log('restart quiz clicked');
         result = window.confirm("Are you sure you want to start again?");
         if (result == true) {
-            $('.container').empty();
+            clearViewContainer()
             reload();
         }
     });
@@ -377,6 +411,7 @@ function reload() {
 
 //runs the following functions once the document is fully loaded and ready.  This sets up the view and click handlers.
 $(document).ready(function(){
+    injectStructure();
     generateQuestions()
     renderStart()
     handleQuizStartClick();
