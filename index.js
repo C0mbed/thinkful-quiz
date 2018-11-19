@@ -4,25 +4,28 @@ function renderStart() {
   }
 
 function injectStructure() {
-    console.log('structure injected');
     const viewStructure = `
         <section class="view_container">
-            <section class="content_container">
+            <div class="content_container">
                  <!--questions and answer choices injected here-->
-             </section>
-            <section class="next_btn_container">
+             </div>
+            <div class="next_btn_container">
                  <!--next button injected here-->
-            </section>
-             <section class="results_container">
+            </div>
+             <div class="results_container">
                  <!--results injected here-->
-            </section>
-            <section class="summary_container">
+            </div>
+            <div class="summary_container">
                  <!--summary injected here-->
-             </section>
+             </div>
         </section>
     `
     $('.container').append(viewStructure);
 }
+
+//global variable to represent the users score.  It begins at zero and is incremented by `incrementUserScore()`.
+let score = 0;
+
 //render the HTML in the start/landing view
 function generateStart() {
     startParagraphText();
@@ -52,7 +55,50 @@ function handleQuizStartClick() {
     $( ".start_quiz" ).click(function() {
         $('.js-start_box').addClass('hidden');
         renderView();
+        $('.nav_item').removeClass('hidden');
       });
+}
+
+
+//This function is used by both the `start again` button and the start again button after the quiz is complete.
+function tryQuizAgain() {
+    $(document).on("click", ".restart", function() {
+        result = window.confirm("Are you sure you want to start again?");
+        if (result == true) {
+            clearViewContainer()
+            score = 0;
+            reload();
+        }
+    });
+}
+
+//clears the next button after answer selection to make way for the disabled button
+function clearPreviousResult() {
+    $('.next_btn_container').empty();
+}
+
+//clears entire view container without clearing the structure. 
+function clearViewContainer() {
+    $('.content_container').empty();
+    $('.next_btn_container').empty();
+    $('.results_container').empty();
+    $('.summary_container').empty();
+}
+
+//handles the creation of a button that can be used anywhere.  Reusable. 
+function createButton(text, className, idName, enabled) {
+    //let button = <button disabled="true" type="button" id="next_button" class="next_button">Next</button>'
+    const newButton = $('<button></button>')
+    newButton.attr('class', className);
+    newButton.attr('id', idName);
+    newButton.html(text);
+    if (enabled == false) {
+        newButton.attr('disabled', true)
+    } else {
+        newButton.attr('disabled', false);
+    }
+
+    return newButton;
 }
 
 //handles the creation of the questions, and then calls for the creation of the HTML and questions in the view.
@@ -60,9 +106,6 @@ function renderView() {
     const questionArray = generateQuestions();
     generateQuiz(questionArray, 0);
 }
-
-//global variable to represent the users score.  It begins at zero and is incremented by `incrementUserScore()`.
-let score = 0;
 
 //randomly sorts an array
 function sortAnswers(a,b) {
@@ -125,17 +168,6 @@ function generateQuestionText(currentQuestion) {
     return question;
 }
 
-function clearPreviousResult() {
-    $('.next_btn_container').empty();
-}
-
-function clearViewContainer() {
-    $('.content_container').empty();
-    $('.next_btn_container').empty();
-    $('.results_container').empty();
-    $('.summary_container').empty();
-}
-
 function generateAnswerChoices(answerButtonText) {
     clearPreviousResult();
     const answerSelections = $('<div></div>')
@@ -160,21 +192,6 @@ function generateAnswerChoices(answerButtonText) {
         answerSelections.append(inputDiv);
     }
     return answerSelections;
-}
-
-function createButton(text, className, idName, enabled) {
-    //let button = <button disabled="true" type="button" id="next_button" class="next_button">Next</button>'
-    const newButton = $('<button></button>')
-    newButton.attr('class', className);
-    newButton.attr('id', idName);
-    newButton.html(text);
-    if (enabled == false) {
-        newButton.attr('disabled', true)
-    } else {
-        newButton.attr('disabled', false);
-    }
-
-    return newButton;
 }
 
 //handle what happens when someone clicks an answer during the quiz.
@@ -232,7 +249,6 @@ function handleIncorrectAnswer(userSelectedAnswer, correctAnswer) {
 }
 
 function enableNextButton(userSelectedAnswer, currentQuestionNumber) {
-    //console.log('enable next button triggered')
     if (userSelectedAnswer) {
         $('#next_button').removeAttr("disabled");
         handleNextQuestion(currentQuestionNumber, score);
@@ -257,7 +273,6 @@ function handleNextQuestion(currentQuestionNumber, score) {
 
 //This determines the current question number and increments the counter in the nav bar.
 function generateQuestionNumber(questionNumber) {
-    console.log('questionNumber is ', questionNumber);
     let questionNumberText = "Q" + questionNumber + "/10";
     $('#question_count').text(questionNumberText);
 }
@@ -295,19 +310,6 @@ function resultHTMLView(result) {
         </section>
     `
     $('.content_container').append(viewResult);
-}
-
-//This function is used by both the `start again` button and the start again button after the quiz is complete.
-function tryQuizAgain() {
-    //console.log('user selected restart quiz');
-    $(document).on("click", ".restart", function() {
-        //console.log('restart quiz clicked');
-        result = window.confirm("Are you sure you want to start again?");
-        if (result == true) {
-            clearViewContainer()
-            reload();
-        }
-    });
 }
 
 //generates the questions array.
@@ -399,6 +401,7 @@ function generateQuestions() {
     return questions
 };
 
+//can be called to reload event listeners in the event they drop off. 
 function reload() {
     generateQuestions()
     renderStart()

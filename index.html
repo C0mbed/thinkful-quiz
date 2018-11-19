@@ -8,11 +8,11 @@
     <!--Website Title-->
     <title>Capital Cities</title>
     <!--Stylesheets-->
-    <link rel="stylesheet" type="text/css" media="screen" href="index.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
     <!--Scripts// First 3 are Jquery and Bootstrap-->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="index.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -21,13 +21,13 @@
             <h1>Capitals Quiz</h1>
         </div>
         <ul class="navbar_items">
-            <li class="nav_item" id="nav_restart">
+            <li class="nav_item hidden" id="nav_restart">
               <a class="restart" id="start_again" href="#">Start Again</a>
             </li>
-            <li class="nav-item" disabled="true">
+            <li class="nav_item hidden" disabled="true">
                 <p id="correct_attempt" disabled="true"></p>
             </li>
-            <li class="nav-item" disabled="true">
+            <li class="nav_item hidden" disabled="true">
               <p id="question_count" disabled="true"></p>
             </li>
           </ul>
